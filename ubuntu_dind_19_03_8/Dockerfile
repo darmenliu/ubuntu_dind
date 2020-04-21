@@ -1,10 +1,10 @@
 FROM ubuntu:18.04
 
-RUN  if [ "x$http_proxy" != "x" ] then \ 
-         echo "Acquire::http::Proxy \"$http_proxy\";" >> /etc/apt/apt.conf \
-     fi \
-     if [ "x$https_proxy" != "x" ] then \
-         echo "Acquire::http::Proxy \"$https_proxy\";" >> /etc/apt/apt.conf \
+RUN  if [ "x$http_proxy" != "x" ]; then \ 
+         echo "Acquire::http::Proxy \"$http_proxy\";" >> /etc/apt/apt.conf; \
+     fi; \
+     if [ "x$https_proxy" != "x" ]; then \
+         echo "Acquire::http::Proxy \"$https_proxy\";" >> /etc/apt/apt.conf; \
      fi
 
 RUN apt update && apt-get install ca-certificates openssh-client wget -y && apt-get clean;
@@ -85,6 +85,9 @@ RUN set -eux; \
 COPY dockerd-entrypoint.sh /usr/local/bin/
 COPY modprobe.sh /usr/local/bin/modprobe
 COPY docker-entrypoint.sh /usr/local/bin/
+RUN  chmod 755 /usr/local/bin/dockerd-entrypoint.sh && \
+     chmod 755 /usr/local/bin/modprobe && \
+     chmod 755 /usr/local/bin/docker-entrypoint.sh
 
 # https://github.com/docker-library/docker/pull/166
 #   dockerd-entrypoint.sh uses DOCKER_TLS_CERTDIR for auto-generating TLS certificates
@@ -98,5 +101,5 @@ RUN mkdir /certs /certs/client && chmod 1777 /certs /certs/client
 VOLUME /var/lib/docker
 EXPOSE 2375 2376
 
-ENTRYPOINT ["dockerd-entrypoint.sh"]
-CMD ["sh"]
+ENTRYPOINT ["/usr/local/bin/dockerd-entrypoint.sh"]
+CMD []
